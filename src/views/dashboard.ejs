@@ -1,6 +1,6 @@
 <%- include('partials/header', { title, user }) %>
 
-<section class="zikr-app-shell">
+<section class="zikr-page">
   <% if (success) { %>
   <p class="message success"><%= success %></p>
   <% } %>
@@ -9,48 +9,64 @@
   <% } %>
 
   <% if (!userZikirs.length) { %>
-  <article class="zikr-app-card empty-card">
-    <h1>Benim Zikirlerim</h1>
-    <p>Henuz zikir eklemedin. Asagidaki formdan yeni zikir olusturabilirsin.</p>
+  <article class="zikr-shell empty-shell">
+    <h1>Zikir listesi bos</h1>
+    <p>Asagidaki formdan zikir ekleyerek baslayabilirsiniz.</p>
   </article>
   <% } else { %>
-  <article class="zikr-app-card" id="zikrApp" data-total="<%= userZikirs.length %>">
-    <div class="app-top-controls">
-      <button id="themeToggle" class="icon-btn" type="button" aria-label="Tema degistir">☀</button>
+  <article class="zikr-shell" id="zikrShell">
+    <div class="top-controls">
+      <button id="themeToggle" class="icon-button" type="button" aria-label="Tema degistir">☀️</button>
 
-      <div class="step-track-wrap">
-        <button id="prevZikir" class="nav-btn" type="button" aria-label="Onceki">‹</button>
-        <div class="step-track" id="stepTrack"></div>
-        <button id="nextZikir" class="nav-btn" type="button" aria-label="Sonraki">›</button>
+      <div class="step-nav-wrap">
+        <button id="prevStep" class="arrow-btn" type="button" aria-label="Onceki">‹</button>
+        <div id="stepNav" class="step-nav"></div>
+        <button id="nextStep" class="arrow-btn" type="button" aria-label="Sonraki">›</button>
       </div>
 
-      <button id="resetCount" class="icon-btn danger" type="button" aria-label="Sayaci sifirla">↻</button>
+      <button id="resetCurrent" class="icon-button danger" type="button" aria-label="Sayaci sifirla">↺</button>
     </div>
 
-    <div class="step-title" id="stepTitle">ASAMA 1 / <%= userZikirs.length %></div>
-    <h2 class="zikr-title" id="zikrTitle"></h2>
-    <p class="completion-message" id="completionMessage" hidden>Zikrilerinizi tamamladiniz.</p>
-
-    <div class="zikr-meaning" id="zikrMeaning"></div>
-
-    <div class="app-bottom">
-      <div class="counter-circle" id="counterCircle">
-        <strong id="currentCount">0</strong>
+    <div id="mainScreen" class="main-screen">
+      <div class="headline">
+        <div id="stepInfo" class="step-info"></div>
+        <h2 id="titleText" class="title-text"></h2>
       </div>
 
-      <div class="target-box">
-        <small>HEDEF</small>
-        <strong id="targetCount">0</strong>
+      <div class="prayer-area" id="prayerArea">
+        <p id="prayerText" class="prayer-text"></p>
+      </div>
+
+      <div class="action-footer">
+        <div class="counter-row">
+          <div class="counter-ring-wrap">
+            <svg class="counter-ring" viewBox="0 0 110 110" aria-hidden="true">
+              <circle cx="55" cy="55" r="47" class="ring-bg"></circle>
+              <circle id="ringProgress" cx="55" cy="55" r="47" class="ring-progress"></circle>
+            </svg>
+            <div id="countText" class="count-text">0</div>
+          </div>
+          <div class="target-box">
+            <span>HEDEF</span>
+            <strong id="targetText">0</strong>
+          </div>
+        </div>
+
+        <button id="mainBtn" class="main-btn" type="button">OKUDUM</button>
+
+        <div class="mini-actions">
+          <button id="minusBtn" type="button" class="mini-btn">-1</button>
+          <form id="deleteForm" method="post">
+            <button type="submit" class="mini-btn danger">Sil</button>
+          </form>
+        </div>
       </div>
     </div>
 
-    <button id="okudumBtn" class="okudum-btn" type="button">OKUDUM</button>
-
-    <div class="mini-actions">
-      <button id="decrementBtn" type="button" class="btn btn-soft">-1</button>
-      <form id="deleteForm" method="post">
-        <button type="submit" class="btn btn-danger">Sil</button>
-      </form>
+    <div id="finishScreen" class="finish-screen hidden">
+      <div class="finish-icon">🤲</div>
+      <h3>Zikrilerinizi tamamladiniz.</h3>
+      <p>Allah kabul etsin.</p>
     </div>
   </article>
 
@@ -58,104 +74,145 @@
   <script>
     (() => {
       const raw = document.getElementById('zikrData');
-      if (!raw) {
-        return;
-      }
+      if (!raw) return;
 
       const zikirs = JSON.parse(raw.textContent || '[]');
-      if (!zikirs.length) {
-        return;
-      }
+      if (!zikirs.length) return;
 
-      const app = document.getElementById('zikrApp');
-      const stepTrack = document.getElementById('stepTrack');
-      const stepTitle = document.getElementById('stepTitle');
-      const zikrTitle = document.getElementById('zikrTitle');
-      const zikrMeaning = document.getElementById('zikrMeaning');
-      const currentCount = document.getElementById('currentCount');
-      const targetCount = document.getElementById('targetCount');
-      const counterCircle = document.getElementById('counterCircle');
-      const completionMessage = document.getElementById('completionMessage');
-      const deleteForm = document.getElementById('deleteForm');
+      const $ = (id) => document.getElementById(id);
 
-      const prevBtn = document.getElementById('prevZikir');
-      const nextBtn = document.getElementById('nextZikir');
-      const okudumBtn = document.getElementById('okudumBtn');
-      const decrementBtn = document.getElementById('decrementBtn');
-      const resetBtn = document.getElementById('resetCount');
-      const themeToggle = document.getElementById('themeToggle');
+      const stepNav = $('stepNav');
+      const stepInfo = $('stepInfo');
+      const titleText = $('titleText');
+      const prayerText = $('prayerText');
+      const countText = $('countText');
+      const targetText = $('targetText');
+      const ringProgress = $('ringProgress');
+      const mainBtn = $('mainBtn');
+      const minusBtn = $('minusBtn');
+      const resetCurrent = $('resetCurrent');
+      const prevStep = $('prevStep');
+      const nextStep = $('nextStep');
+      const themeToggle = $('themeToggle');
+      const deleteForm = $('deleteForm');
+      const mainScreen = $('mainScreen');
+      const finishScreen = $('finishScreen');
 
       const THEME_KEY = 'zikirmatik-theme';
+      const CIRCUMFERENCE = 2 * Math.PI * 47;
+
       const savedTheme = localStorage.getItem(THEME_KEY);
-      if (savedTheme === 'light' || savedTheme === 'dark') {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-      } else {
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-
-      const syncThemeIcon = () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-        themeToggle.textContent = currentTheme === 'dark' ? '☀' : '☾';
-      };
-      syncThemeIcon();
-
-      themeToggle.addEventListener('click', () => {
-        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
-        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', nextTheme);
-        localStorage.setItem(THEME_KEY, nextTheme);
-        syncThemeIcon();
-      });
+      const initialTheme = savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'dark';
+      document.documentElement.setAttribute('data-theme', initialTheme);
 
       let activeIndex = 0;
       let busy = false;
 
-      const dots = zikirs.map((_, index) => {
-        const dot = document.createElement('button');
-        dot.type = 'button';
-        dot.className = 'track-dot';
-        dot.setAttribute('aria-label', `Asama ${index + 1}`);
-        dot.addEventListener('click', () => {
-          activeIndex = index;
-          render();
-        });
-        stepTrack.appendChild(dot);
-        return dot;
-      });
-
-      const getAjaxUrl = (id, action) => `/zikirs/${id}/${action}?ajax=1`;
       const isCompleted = (item) => item.current_count >= item.target_count;
+      const allCompleted = () => zikirs.length > 0 && zikirs.every((item) => isCompleted(item));
 
-      function findNextIncompleteIndex(fromIndex) {
-        for (let i = fromIndex + 1; i < zikirs.length; i += 1) {
-          if (!isCompleted(zikirs[i])) {
-            return i;
-          }
+      function firstIncompleteIndex() {
+        const idx = zikirs.findIndex((item) => !isCompleted(item));
+        return idx === -1 ? 0 : idx;
+      }
+
+      function nextIncompleteIndex(from) {
+        for (let i = from + 1; i < zikirs.length; i += 1) {
+          if (!isCompleted(zikirs[i])) return i;
         }
-
-        for (let i = 0; i <= fromIndex; i += 1) {
-          if (!isCompleted(zikirs[i])) {
-            return i;
-          }
+        for (let i = 0; i <= from; i += 1) {
+          if (!isCompleted(zikirs[i])) return i;
         }
-
         return -1;
       }
 
-      async function updateCounter(action) {
-        if (busy || !zikirs[activeIndex]) {
+      function syncThemeIcon() {
+        const t = document.documentElement.getAttribute('data-theme') || 'dark';
+        themeToggle.textContent = t === 'dark' ? '☀️' : '🌙';
+      }
+
+      function setBusyState(state) {
+        busy = state;
+        mainBtn.disabled = state || allCompleted();
+        minusBtn.disabled = state || allCompleted();
+        resetCurrent.disabled = state || allCompleted();
+      }
+
+      function renderDots() {
+        stepNav.innerHTML = '';
+        zikirs.forEach((item, index) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'step-dot';
+          if (index === activeIndex) dot.classList.add('active');
+          if (isCompleted(item)) dot.classList.add('done');
+          dot.addEventListener('click', () => {
+            activeIndex = index;
+            render();
+          });
+          stepNav.appendChild(dot);
+        });
+
+        const activeDot = stepNav.children[activeIndex];
+        if (activeDot) {
+          activeDot.scrollIntoView({ block: 'nearest', inline: 'center', behavior: 'smooth' });
+        }
+      }
+
+      function render() {
+        if (!zikirs.length) return;
+
+        if (allCompleted()) {
+          mainScreen.classList.add('hidden');
+          finishScreen.classList.remove('hidden');
+          renderDots();
+          prevStep.disabled = true;
+          nextStep.disabled = true;
+          setBusyState(false);
           return;
         }
 
-        busy = true;
-        okudumBtn.disabled = true;
-        decrementBtn.disabled = true;
-        resetBtn.disabled = true;
+        mainScreen.classList.remove('hidden');
+        finishScreen.classList.add('hidden');
 
-        const current = zikirs[activeIndex];
+        if (!zikirs[activeIndex] || isCompleted(zikirs[activeIndex])) {
+          activeIndex = firstIncompleteIndex();
+        }
+
+        const item = zikirs[activeIndex];
+        if (!item) return;
+
+        stepInfo.textContent = `ASAMA ${activeIndex + 1} / ${zikirs.length}`;
+        titleText.textContent = item.title;
+        prayerText.textContent = item.description || item.title;
+        countText.textContent = String(item.current_count);
+        targetText.textContent = String(item.target_count);
+
+        const progress = item.target_count > 0
+          ? Math.min(1, item.current_count / item.target_count)
+          : 0;
+
+        ringProgress.style.strokeDasharray = String(CIRCUMFERENCE);
+        ringProgress.style.strokeDashoffset = String(CIRCUMFERENCE - (CIRCUMFERENCE * progress));
+        mainBtn.textContent = isCompleted(item) ? 'TAMAMLANDI' : 'OKUDUM';
+
+        deleteForm.action = `/zikirs/${item.id}/delete`;
+
+        prevStep.disabled = activeIndex === 0;
+        nextStep.disabled = activeIndex === zikirs.length - 1;
+
+        renderDots();
+        setBusyState(false);
+      }
+
+      async function postCounter(action) {
+        if (busy || !zikirs[activeIndex]) return;
+
+        setBusyState(true);
+        const item = zikirs[activeIndex];
 
         try {
-          const response = await fetch(getAjaxUrl(current.id, action), {
+          const response = await fetch(`/zikirs/${item.id}/${action}?ajax=1`, {
             method: 'POST',
             headers: { Accept: 'application/json' },
             credentials: 'same-origin',
@@ -168,113 +225,39 @@
           }
 
           const payload = await response.json();
-          current.current_count = payload.currentCount;
-          current.target_count = payload.targetCount;
+          item.current_count = payload.currentCount;
+          item.target_count = payload.targetCount;
 
-          if (action === 'increment' && isCompleted(current)) {
-            const nextIndex = findNextIncompleteIndex(activeIndex);
-            if (nextIndex !== -1) {
-              activeIndex = nextIndex;
-            }
+          if (action === 'increment' && isCompleted(item)) {
+            const ni = nextIncompleteIndex(activeIndex);
+            if (ni !== -1) activeIndex = ni;
           }
 
           render();
         } catch (err) {
           console.error(err);
-          alert('Islem yapilirken hata olustu.');
-        } finally {
-          busy = false;
-          okudumBtn.disabled = false;
-          decrementBtn.disabled = false;
-          resetBtn.disabled = false;
+          alert('Islem sirasinda hata olustu.');
+          setBusyState(false);
         }
       }
 
-      function render() {
-        if (!zikirs.length) {
-          return;
-        }
+      mainBtn.addEventListener('click', () => postCounter('increment'));
+      minusBtn.addEventListener('click', () => postCounter('decrement'));
+      resetCurrent.addEventListener('click', () => postCounter('reset'));
 
-        const allCompleted = zikirs.every((item) => isCompleted(item));
-        if (allCompleted) {
-          completionMessage.hidden = false;
-          stepTitle.textContent = `ASAMA ${zikirs.length} / ${zikirs.length}`;
-          zikrTitle.textContent = 'Zikrilerinizi tamamladiniz.';
-          zikrMeaning.textContent = 'Allah kabul etsin.';
-          currentCount.textContent = String(zikirs.length);
-          targetCount.textContent = String(zikirs.length);
-          counterCircle.style.setProperty('--progress', '100%');
-
-          dots.forEach((dot, index) => {
-            dot.classList.toggle('active', index === activeIndex);
-            dot.classList.toggle('done', true);
-          });
-
-          prevBtn.disabled = true;
-          nextBtn.disabled = true;
-          okudumBtn.disabled = true;
-          decrementBtn.disabled = true;
-          resetBtn.disabled = true;
-          return;
-        }
-
-        if (!zikirs[activeIndex] || isCompleted(zikirs[activeIndex])) {
-          const nextIndex = findNextIncompleteIndex(activeIndex);
-          if (nextIndex !== -1) {
-            activeIndex = nextIndex;
-          }
-        }
-
-        const item = zikirs[activeIndex];
-        if (!item) {
-          return;
-        }
-
-        completionMessage.hidden = true;
-        stepTitle.textContent = `ASAMA ${activeIndex + 1} / ${zikirs.length}`;
-        zikrTitle.textContent = item.title;
-        zikrMeaning.textContent = item.description || item.title;
-
-        currentCount.textContent = String(item.current_count);
-        targetCount.textContent = String(item.target_count);
-
-        const progress = item.target_count > 0
-          ? Math.min(100, Math.round((item.current_count / item.target_count) * 100))
-          : 0;
-
-        counterCircle.style.setProperty('--progress', `${progress}%`);
-
-        deleteForm.action = `/zikirs/${item.id}/delete`;
-
-        dots.forEach((dot, index) => {
-          dot.classList.toggle('active', index === activeIndex);
-          dot.classList.toggle('done', isCompleted(zikirs[index]));
-        });
-
-        prevBtn.disabled = activeIndex === 0;
-        nextBtn.disabled = activeIndex === zikirs.length - 1;
-        okudumBtn.disabled = busy;
-        decrementBtn.disabled = busy;
-        resetBtn.disabled = busy;
-      }
-
-      prevBtn.addEventListener('click', () => {
+      prevStep.addEventListener('click', () => {
         if (activeIndex > 0) {
           activeIndex -= 1;
           render();
         }
       });
 
-      nextBtn.addEventListener('click', () => {
+      nextStep.addEventListener('click', () => {
         if (activeIndex < zikirs.length - 1) {
           activeIndex += 1;
           render();
         }
       });
-
-      okudumBtn.addEventListener('click', () => updateCounter('increment'));
-      decrementBtn.addEventListener('click', () => updateCounter('decrement'));
-      resetBtn.addEventListener('click', () => updateCounter('reset'));
 
       deleteForm.addEventListener('submit', (event) => {
         const item = zikirs[activeIndex];
@@ -282,12 +265,22 @@
           event.preventDefault();
           return;
         }
-        const ok = confirm(`"${item.title}" silinsin mi?`);
-        if (!ok) {
+
+        if (!confirm(`"${item.title}" silinsin mi?`)) {
           event.preventDefault();
         }
       });
 
+      themeToggle.addEventListener('click', () => {
+        const curr = document.documentElement.getAttribute('data-theme') || 'dark';
+        const next = curr === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem(THEME_KEY, next);
+        syncThemeIcon();
+      });
+
+      activeIndex = firstIncompleteIndex();
+      syncThemeIcon();
       render();
     })();
   </script>
