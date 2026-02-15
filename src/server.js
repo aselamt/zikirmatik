@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const session = require('express-session');
 const SQLiteStoreFactory = require('connect-sqlite3');
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || 3000;
 const SESSION_SECRET = process.env.SESSION_SECRET || 'zikirmatik-dev-secret-change-me';
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin12345';
+const NODE_ENV = process.env.NODE_ENV || 'development';
+const isProduction = NODE_ENV === 'production';
 
 async function ensureDefaultAdmin(db) {
   const existing = await db.get('SELECT id FROM users WHERE username = ?', ADMIN_USERNAME);
@@ -39,6 +42,11 @@ async function main() {
 
   app.set('view engine', 'ejs');
   app.set('views', path.join(__dirname, 'views'));
+  app.set('trust proxy', 1);
+
+  const defaultSessionDir = path.join(__dirname, '..');
+  const sessionDir = process.env.SESSION_DB_DIR || defaultSessionDir;
+  fs.mkdirSync(sessionDir, { recursive: true });
 
   app.use(express.urlencoded({ extended: false }));
   app.use(express.static(path.join(__dirname, 'public')));
@@ -46,13 +54,15 @@ async function main() {
     session({
       store: new SQLiteStore({
         db: 'sessions.sqlite',
-        dir: path.join(__dirname, '..'),
+        dir: sessionDir,
       }),
       secret: SESSION_SECRET,
       resave: false,
       saveUninitialized: false,
       cookie: {
         httpOnly: true,
+        secure: isProduction,
+        sameSite: 'lax',
         maxAge: 1000 * 60 * 60 * 24 * 7,
       },
     })

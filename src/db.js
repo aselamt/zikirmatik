@@ -1,10 +1,14 @@
 const path = require('path');
+const fs = require('fs');
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 
-const dbPath = path.join(__dirname, '..', 'database.sqlite');
+const defaultDbPath = path.join(__dirname, '..', 'database.sqlite');
+const dbPath = process.env.DATABASE_PATH || defaultDbPath;
 
 async function initDb() {
+  fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+
   const db = await open({
     filename: dbPath,
     driver: sqlite3.Database,
