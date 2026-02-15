@@ -1,0 +1,479 @@
+:root {
+  --bg: #f2efe8;
+  --bg-grad-1: #f6f2ea;
+  --bg-grad-2: #e8e0d3;
+  --surface: #ffffff;
+  --surface-2: #f9f7f2;
+  --text: #1d2229;
+  --muted: #5e6670;
+  --border: #d7d2c7;
+  --primary: #109a71;
+  --primary-strong: #0a7f5f;
+  --danger: #d64545;
+  --navy: #0a1837;
+  --navy-2: #0f254d;
+  --chip: #eff3f8;
+  --dot: #6e7a95;
+  --shadow: 0 10px 40px rgba(14, 30, 62, 0.12);
+}
+
+:root[data-theme='dark'] {
+  --bg: #020e2b;
+  --bg-grad-1: #03103b;
+  --bg-grad-2: #06183f;
+  --surface: #081a42;
+  --surface-2: #0e2551;
+  --text: #eff4ff;
+  --muted: #93a4c4;
+  --border: rgba(123, 145, 189, 0.22);
+  --primary: #17c79a;
+  --primary-strong: #0e9f79;
+  --danger: #ff5469;
+  --navy: #07163a;
+  --navy-2: #0d224b;
+  --chip: #132b57;
+  --dot: #314b7a;
+  --shadow: 0 20px 40px rgba(2, 10, 30, 0.5);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'SF Pro Display', Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background: radial-gradient(circle at top right, var(--bg-grad-2), var(--bg-grad-1) 30%, var(--bg));
+  min-height: 100vh;
+}
+
+.container {
+  width: min(980px, 92%);
+  margin: 0 auto;
+}
+
+.topbar {
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.topbar-inner {
+  padding: 14px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.brand {
+  color: var(--primary);
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-decoration: none;
+  font-size: 1.6rem;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+nav a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+main {
+  padding: 22px 0 40px;
+}
+
+.auth-card,
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.auth-card {
+  max-width: 460px;
+  margin: 30px auto;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  font-size: 0.95rem;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 10px;
+  font: inherit;
+}
+
+.stack {
+  display: grid;
+  gap: 10px;
+}
+
+.btn {
+  background: linear-gradient(140deg, var(--primary), var(--primary-strong));
+  color: #f5fffd;
+  border: 0;
+  border-radius: 10px;
+  padding: 9px 13px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-soft {
+  background: var(--chip);
+  color: var(--text);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+.btn-link {
+  background: transparent;
+  color: var(--text);
+  padding: 0;
+}
+
+.inline-form {
+  display: inline;
+}
+
+.message {
+  border-radius: 10px;
+  padding: 10px;
+  margin: 0 0 12px;
+}
+
+.message.success {
+  background: color-mix(in srgb, var(--primary) 22%, transparent);
+  color: var(--text);
+}
+
+.message.error {
+  background: color-mix(in srgb, var(--danger) 20%, transparent);
+  color: var(--text);
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.badge {
+  background: var(--chip);
+  color: var(--text);
+  font-size: 0.8rem;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.list li {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  background: color-mix(in srgb, var(--surface) 80%, var(--surface-2));
+}
+
+.utilities-panel {
+  margin-top: 16px;
+}
+
+.zikr-app-shell {
+  margin: 0 auto 16px;
+}
+
+.zikr-app-card {
+  max-width: 860px;
+  margin: 0 auto;
+  border-radius: 46px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--navy-2), var(--navy));
+  padding: 24px;
+  min-height: 680px;
+  display: flex;
+  flex-direction: column;
+  color: #eef5ff;
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme='light'] .zikr-app-card {
+  color: #f7fbff;
+  background: linear-gradient(180deg, #0d2c65, #07214f);
+}
+
+.empty-card {
+  min-height: auto;
+  background: var(--surface);
+  color: var(--text);
+  border-radius: 20px;
+}
+
+.app-top-controls {
+  display: grid;
+  grid-template-columns: 70px 1fr 70px;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-btn,
+.nav-btn {
+  border: 1px solid transparent;
+  background: color-mix(in srgb, #fff 10%, transparent);
+  color: #eaf2ff;
+  border-radius: 20px;
+  width: 58px;
+  height: 58px;
+  font-size: 1.7rem;
+  cursor: pointer;
+}
+
+.icon-btn.danger {
+  color: #ff7f8e;
+}
+
+.step-track-wrap {
+  background: color-mix(in srgb, #fff 8%, transparent);
+  border-radius: 26px;
+  height: 72px;
+  padding: 0 14px;
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+  border: 1px solid color-mix(in srgb, #fff 10%, transparent);
+}
+
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: transparent;
+  font-size: 2rem;
+}
+
+.nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.step-track {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10px, 1fr));
+  gap: 10px;
+  padding: 0 10px;
+}
+
+.track-dot {
+  border: 0;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--dot);
+  cursor: pointer;
+}
+
+.track-dot.active {
+  background: var(--primary);
+}
+
+.track-dot.done {
+  background: color-mix(in srgb, var(--primary) 65%, #8fa0bf);
+}
+
+.step-title {
+  margin-top: 24px;
+  text-align: center;
+  letter-spacing: 5px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.zikr-title {
+  text-align: center;
+  margin: 8px 0 4px;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+}
+
+.completion-message {
+  text-align: center;
+  margin: 4px 0 0;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.zikr-meaning {
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: center;
+  font-style: italic;
+  font-size: clamp(2rem, 4.5vw, 4rem);
+  opacity: 0.96;
+}
+
+.app-bottom {
+  margin-top: auto;
+  border-top: 1px solid color-mix(in srgb, #fff 16%, transparent);
+  padding-top: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.counter-circle {
+  --progress: 0%;
+  width: 158px;
+  height: 158px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, var(--navy) 58%, transparent 59%),
+    conic-gradient(var(--primary) var(--progress), rgba(255, 255, 255, 0.14) 0);
+  box-shadow: inset 0 0 0 9px color-mix(in srgb, #fff 10%, transparent);
+}
+
+.counter-circle strong {
+  font-size: 3rem;
+}
+
+.target-box {
+  text-align: right;
+  display: grid;
+  gap: 6px;
+}
+
+.target-box small {
+  font-size: 1.45rem;
+  letter-spacing: 3px;
+  color: #8ea0c4;
+  font-weight: 700;
+}
+
+.target-box strong {
+  font-size: 3.6rem;
+  font-weight: 800;
+}
+
+.okudum-btn {
+  margin-top: 22px;
+  border: 0;
+  border-radius: 999px;
+  padding: 24px 26px;
+  font: inherit;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #effff9;
+  background: linear-gradient(130deg, var(--primary-strong), var(--primary));
+  cursor: pointer;
+  box-shadow: 0 16px 38px color-mix(in srgb, var(--primary) 35%, transparent);
+}
+
+.okudum-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.mini-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+@media (max-width: 900px) {
+  .brand {
+    font-size: 1.2rem;
+  }
+
+  nav {
+    gap: 8px;
+  }
+
+  .list li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .zikr-app-card {
+    border-radius: 30px;
+    min-height: 620px;
+    padding: 16px;
+  }
+
+  .app-top-controls {
+    grid-template-columns: 56px 1fr 56px;
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 1.4rem;
+  }
+
+  .step-track-wrap {
+    height: 64px;
+    padding: 0 8px;
+  }
+
+  .counter-circle {
+    width: 130px;
+    height: 130px;
+  }
+
+  .counter-circle strong {
+    font-size: 2.5rem;
+  }
+
+  .target-box small {
+    font-size: 1rem;
+  }
+
+  .target-box strong {
+    font-size: 2.5rem;
+  }
+
+  .okudum-btn {
+    font-size: 1.5rem;
+    padding: 18px 20px;
+  }
+}

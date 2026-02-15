@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%= title %> | Zikirmatik</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="container topbar-inner">
+        <a class="brand" href="/dashboard">Zikirmatik</a>
+        <nav>
+          <% if (user) { %>
+          <span class="badge"><%= user.username %> (<%= user.role %>)</span>
+          <a href="/dashboard">Panel</a>
+          <% if (user.role === 'admin') { %>
+          <a href="/admin">Admin</a>
+          <% } %>
+          <form action="/logout" method="post" class="inline-form">
+            <button type="submit" class="btn btn-link">Cikis</button>
+          </form>
+          <% } else { %>
+          <a href="/login">Giris</a>
+          <a href="/register">Uye Ol</a>
+          <% } %>
+        </nav>
+      </div>
+    </header>
+    <main class="container">

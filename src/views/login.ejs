@@ -1,0 +1,22 @@
+<%- include('partials/header', { title, user }) %>
+
+<section class="auth-card">
+  <h1>Giris Yap</h1>
+  <% if (error) { %>
+  <p class="message error"><%= error %></p>
+  <% } %>
+  <form action="/login" method="post" class="stack">
+    <label>
+      Kullanici Adi
+      <input type="text" name="username" required />
+    </label>
+    <label>
+      Sifre
+      <input type="password" name="password" required />
+    </label>
+    <button type="submit" class="btn">Giris</button>
+  </form>
+  <p class="muted">Hesabin yok mu? <a href="/register">Uye ol</a></p>
+</section>
+
+<%- include('partials/footer') %>

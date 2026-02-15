@@ -1,0 +1,57 @@
+<%- include('partials/header', { title, user }) %>
+
+<section class="page-header">
+  <h1>Admin Paneli</h1>
+  <p>Buradan tum kullanicilarin gorebilecegi hazir zikirleri yonetebilirsin.</p>
+</section>
+
+<% if (success) { %>
+<p class="message success"><%= success %></p>
+<% } %>
+<% if (error) { %>
+<p class="message error"><%= error %></p>
+<% } %>
+
+<section class="grid two">
+  <article class="panel">
+    <h2>Hazir Zikir Ekle</h2>
+    <form action="/admin/presets" method="post" class="stack">
+      <label>
+        Baslik
+        <input type="text" name="title" required />
+      </label>
+      <label>
+        Aciklama
+        <textarea name="description" rows="3"></textarea>
+      </label>
+      <label>
+        Hedef Adet
+        <input type="number" name="targetCount" min="1" value="33" required />
+      </label>
+      <button type="submit" class="btn">Ekle</button>
+    </form>
+  </article>
+
+  <article class="panel">
+    <h2>Mevcut Hazir Zikirler</h2>
+    <% if (!presets.length) { %>
+    <p class="muted">Kayit yok.</p>
+    <% } %>
+    <ul class="list">
+      <% presets.forEach((item) => { %>
+      <li>
+        <div>
+          <strong><%= item.title %></strong>
+          <p><%= item.description || 'Aciklama yok.' %></p>
+          <small>Hedef: <%= item.target_count %> | Ekleyen: <%= item.creator || 'admin' %></small>
+        </div>
+        <form action="/admin/presets/<%= item.id %>/delete" method="post">
+          <button class="btn btn-danger" type="submit">Sil</button>
+        </form>
+      </li>
+      <% }) %>
+    </ul>
+  </article>
+</section>
+
+<%- include('partials/footer') %>
